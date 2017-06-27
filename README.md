@@ -1,5 +1,5 @@
-# EverPsCanvas
+# EverPsCanvas v0.1
 
-### Canvas Module for Prestashop 1.7
+### Module Canvas for Prestashop 1.7
 
-This module shows a HTML block on the home page.  
+This module shows a HTML block on the home page.
