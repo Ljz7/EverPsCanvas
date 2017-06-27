@@ -56,7 +56,6 @@ class EverPsCanvas extends Module implements WidgetInterface
     public function install()
     {
         return parent::install()
-            && $this->registerHook('displayTop')
             && $this->registerHook('displayHome')
             && $this->registerHook('displayHeader');
     }
@@ -116,8 +115,6 @@ class EverPsCanvas extends Module implements WidgetInterface
 
     public function renderForm()
     {
-        $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-
         $fields_form = array(
             'form' => array(
                 'tinymce' => true,
@@ -142,19 +139,12 @@ class EverPsCanvas extends Module implements WidgetInterface
             ),
         );
 
+        $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
+
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmit';
-        foreach (Language::getLanguages(false) as $lang) {
-            $helper->languages[] = array(
-                'id_lang' => $lang['id_lang'],
-                'iso_code' => $lang['iso_code'],
-                'name' => $lang['name'],
-                'is_default' => ($default_lang == $lang['id_lang'] ? 1 : 0)
-            );
-        }
-
         $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
         $helper->default_form_language = $default_lang;
         $helper->allow_employee_form_lang = $default_lang;
@@ -165,20 +155,18 @@ class EverPsCanvas extends Module implements WidgetInterface
             'id_language' => $this->context->language->id
         );
 
-        $this->fields_form = array();
-
         return $helper->generateForm(array($fields_form));
     }
 
     public function getConfigFieldsValues()
     {
         $everpscanvas_html = [];
-        foreach ($this->context->controller->getLanguages() as $language) {
-            $everpscanvas_html[$language['id_lang']] = Tools::getValue('EVERPSCANVAS_HTML_'.$language['id_lang']);
+        foreach (Language::getLanguages(false) as $lang) {
+            $everpscanvas_html[$lang['id_lang']] = (Tools::getValue('EVERPSCANVAS_HTML_'.$lang['id_lang'])) ? Tools::getValue('EVERPSCANVAS_HTML_'.$lang['id_lang']) : '';
         }
-
+        
         return [
-            'EVERPSCANVAS_HTML' => ($everpscanvas_html) ? $everpscanvas_html : Configuration::getInt('EVERPSCANVAS_HTML')
+            'EVERPSCANVAS_HTML' => (!empty($everpscanvas_html[(int)Configuration::get('PS_LANG_DEFAULT')])) ? $everpscanvas_html : Configuration::getInt('EVERPSCANVAS_HTML')
         ];
     }
 
