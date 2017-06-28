@@ -3,3 +3,6 @@
 ### Module Canvas for Prestashop 1.7
 
 This module shows a HTML block on the home page.
+
+---------------------------------------
+[Team Ever](https://www.team-ever.com/)

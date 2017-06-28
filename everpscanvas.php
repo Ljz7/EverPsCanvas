@@ -27,10 +27,14 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 class EverPsCanvas extends Module implements WidgetInterface
 {
+    // define module properties
     private $templateFile;
     private $_postErrors = array();
     private $_html = '';
 
+    /**
+     * EverPsCanvas Constructor
+     */
     public function __construct()
     {
         $this->name = 'everpscanvas';
@@ -51,8 +55,12 @@ class EverPsCanvas extends Module implements WidgetInterface
         $this->templateFile = 'module:everpscanvas/views/templates/hook/everpscanvas.tpl';
     }
 
-
-
+    /**
+     * Install the module
+     *
+     * @return bool Whether the module has been successfully installed
+     * @throws PrestaShopException
+     */
     public function install()
     {
         return parent::install()
@@ -60,13 +68,20 @@ class EverPsCanvas extends Module implements WidgetInterface
             && $this->registerHook('displayHeader');
     }
 
+    /**
+     * Uninstall the module
+     *
+     * @return bool Whether the module has been successfully uninstalled
+     */
     public function uninstall()
     {
         return parent::uninstall()
             && Configuration::deleteByName('EVERPSCANVAS_HTML');
     }
 
-
+    /**
+     * Validate form data.
+     */
     private function _postValidation()
     {
         if (Tools::isSubmit('btnSubmit')) {
@@ -78,6 +93,9 @@ class EverPsCanvas extends Module implements WidgetInterface
         }
     }
 
+    /**
+     * Save form data.
+     */
     private function _postProcess()
     {
         if (Tools::isSubmit('btnSubmit')) {
@@ -92,6 +110,11 @@ class EverPsCanvas extends Module implements WidgetInterface
         $this->_html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
+    /**
+     * Load the configuration form
+     *
+     * @return string Configuration form HTML
+     */
     public function getContent()
     {
         $this->_html = '';
@@ -112,7 +135,9 @@ class EverPsCanvas extends Module implements WidgetInterface
         return $this->_html;
     }
 
-
+    /**
+     * Create the form that will be displayed in the configuration of the module.
+     */
     public function renderForm()
     {
         $fields_form = array(
@@ -158,6 +183,9 @@ class EverPsCanvas extends Module implements WidgetInterface
         return $helper->generateForm(array($fields_form));
     }
 
+    /**
+     * Get the configuration fields values for the configuration form of the module.
+     */
     public function getConfigFieldsValues()
     {
         $everpscanvas_html = [];
@@ -170,11 +198,26 @@ class EverPsCanvas extends Module implements WidgetInterface
         ];
     }
 
+    /**
+     * hookDisplayHeader
+     *
+     * Register CSS and/or JS scripts
+     *
+     * @param mixed $params
+     */
     public function hookDisplayHeader($params)
     {
         $this->context->controller->registerStylesheet('modules-everpscanvas', 'modules/'.$this->name.'/views/css/everpscanvas.css', ['media' => 'all', 'priority' => 150]);
     }
 
+    /**
+     * renderWidget
+     *
+     * Return the generated view (fetch smarty template)
+     *
+     * @param string $hookName
+     * @param array $configuration
+     */
     public function renderWidget($hookName = null, array $configuration = [])
     {
         if (!$this->isCached($this->templateFile, $this->getCacheId('everpscanvas'))) {
@@ -184,6 +227,14 @@ class EverPsCanvas extends Module implements WidgetInterface
         return $this->fetch($this->templateFile, $this->getCacheId('everpscanvas'));
     }
 
+    /**
+     * getWidgetVariables
+     *
+     * return all variable that you want to assign to smarty
+     *
+     * @param string $hookName
+     * @param array $configuration
+     */
     public function getWidgetVariables($hookName = null, array $configuration = [])
     {
         return array(
